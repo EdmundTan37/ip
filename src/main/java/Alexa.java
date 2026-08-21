@@ -1,6 +1,7 @@
 package src.main.java;
 import java.util.Scanner;
 import java.util.ArrayList;
+import src.main.java.Task;
 
 /**
  * A chatbot that greets the user before ending the program.
@@ -8,9 +9,9 @@ import java.util.ArrayList;
 public class Alexa {
     /** A visual divider used to frame the chatbot's messages. */
     private static final String DIVIDER = "____________________________________________________________";
-    private static ArrayList<New_task> tasks = new ArrayList<>();
-    private static int task_counter = 1;
-    record New_task(int num, String t) {}
+    private static ArrayList<Task> tasks = new ArrayList<>();
+    static int task_counter = 1;
+
     /**
      * Starts Alexa, displays its greeting, and exits.
      *
@@ -36,26 +37,64 @@ public class Alexa {
 
     }
     static void input_statement(String text) {
-        New_task new_task = new New_task(task_counter++, text);
+        if (text.equals("list")) {
+            listText();
+            return ;
+        }
         if (text.equals("bye")) {
-            System.out.println(DIVIDER);
-            System.out.println("Bye. Hope to see you again soon!");
-            System.out.println(DIVIDER);
-        } else if (text.equals("list")) {
-            System.out.println(DIVIDER);
-            print_tasks();
-            System.out.println(DIVIDER);
+            byeText();
+            return ;
+        }
+
+        String[] marked_task = text.split(" ", 2);
+
+        if (marked_task[0].equals("mark")) {
+            markTask(true, Integer.parseInt(marked_task[1]));
+        } else if (marked_task[0].equals("unmark")) {
+            markTask(false, Integer.parseInt(marked_task[1]));
         } else {
+            Task new_task = new Task(task_counter++, false,text);
             tasks.add(new_task);
             System.out.println(DIVIDER);
-            System.out.println(new_task.num + ". " +  new_task.t);
+            new_task.toString();
             System.out.println(DIVIDER);
         }
     }
 
-    static void print_tasks () {
-        for  (New_task task : tasks) {
-            System.out.println(task.num + ". " + task.t);
+    static void byeText() {
+        System.out.println(DIVIDER);
+        System.out.println("Bye. Hope to see you again soon!");
+        System.out.println(DIVIDER);
+    }
+
+     static void listText() {
+        System.out.println(DIVIDER);
+        System.out.println("Here are the tasks in your list:");
+        print_tasks();
+        System.out.println(DIVIDER);
+    }
+
+     static void markTask(boolean mark, int position) {
+        Task task = tasks.get(position - 1);
+        if (mark) {
+            task.changeCompleted();
+            System.out.println(DIVIDER);
+            System.out.println("Nice! I've marked this task as done:");
+            task.toString();
+            System.out.println(DIVIDER);
+        } else {
+            task.changeUncompleted();
+            System.out.println(DIVIDER);
+            System.out.println("Ok, I've marked this task as not done yet:");
+            task.toString();
+            System.out.println(DIVIDER);
         }
     }
+
+     static void print_tasks() {
+        for  (Task task : tasks) {
+            task.toString();
+        }
+    }
+
 }
