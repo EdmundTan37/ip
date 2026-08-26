@@ -74,3 +74,96 @@ ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
 ```
+
+## Test case: Delete a task and renumber the list
+
+**Aim:** Verify that `delete 3` removes the third task and that later tasks shift up in the list.
+
+**Input:**
+
+```text
+todo first
+todo second
+todo third
+todo fourth
+delete 3
+list
+bye
+```
+
+**Expected output:**
+
+```text
+____________________________________________________________
+                 A L E X A
+Hello! I'm Alexa.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [T][ ] first
+Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [T][ ] second
+Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [T][ ] third
+Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [T][ ] fourth
+Now you have 4 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+Noted. I've removed this task:
+  [T][ ] third
+Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][ ] first
+2.[T][ ] second
+3.[T][ ] fourth
+____________________________________________________________
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+## Test case: Reject an invalid deletion number
+
+**Aim:** Verify that Alexa reports a clear error for a deletion outside the current list.
+
+**Input:**
+
+```text
+todo read book
+delete 2
+bye
+```
+
+**Expected output:**
+
+```text
+____________________________________________________________
+                 A L E X A
+Hello! I'm Alexa.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [T][ ] read book
+Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+OOPS!!! There is no task 2. Use list to see the task numbers.
+____________________________________________________________
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```

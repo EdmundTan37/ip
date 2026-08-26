@@ -1,4 +1,5 @@
 package src.main.java;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -7,12 +8,8 @@ import java.util.Scanner;
 public class Alexa {
     /** A visual divider used to frame the chatbot's messages. */
     private static final String DIVIDER = "____________________________________________________________";
-    /** Maximum number of tasks Alexa stores during one run. */
-    private static final int MAX_TASKS = 100;
-    /** The task list. Each item can be any subtype of {@link Task}. */
-    private static final Task[] TASKS = new Task[MAX_TASKS];
-    /** Number of tasks currently stored in {@link #TASKS}. */
-    private static int taskCount;
+    /** The dynamically sized task list. Each item can be any subtype of {@link Task}. */
+    private static final ArrayList<Task> TASKS = new ArrayList<>();
 
     /**
      * Starts Alexa, displays its greeting, and exits.
@@ -56,6 +53,8 @@ public class Alexa {
             updateTaskStatus(argumentAfter(command, "mark"), true);
         } else if (isCommand(command, "unmark")) {
             updateTaskStatus(argumentAfter(command, "unmark"), false);
+        } else if (isCommand(command, "delete")) {
+            deleteTask(argumentAfter(command, "delete"));
         } else {
             throw new AlexaException("I'm sorry, but I don't know what that means :-(");
         }
@@ -86,15 +85,12 @@ public class Alexa {
     }
 
     /** Stores a task and confirms the addition to the user. */
-    private static void addTask(Task task) throws AlexaException {
-        if (taskCount == MAX_TASKS) {
-            throw new AlexaException("Your task list is full. Delete a task before adding another one.");
-        }
-        TASKS[taskCount++] = task;
+    private static void addTask(Task task) {
+        TASKS.add(task);
         System.out.println(DIVIDER);
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + task);
-        System.out.println("Now you have " + taskCount + " tasks in the list.");
+        System.out.println("Now you have " + TASKS.size() + " tasks in the list.");
         System.out.println(DIVIDER);
     }
 
@@ -102,24 +98,17 @@ public class Alexa {
     private static void printTaskList() {
         System.out.println(DIVIDER);
         System.out.println("Here are the tasks in your list:");
-        for (int index = 0; index < taskCount; index++) {
-            System.out.println((index + 1) + "." + TASKS[index]);
+        for (int index = 0; index < TASKS.size(); index++) {
+            System.out.println((index + 1) + "." + TASKS.get(index));
         }
         System.out.println(DIVIDER);
     }
 
     /** Updates the completion status of one task. */
     private static void updateTaskStatus(String numberText, boolean isDone) throws AlexaException {
-        int taskNumber;
-        try {
-            taskNumber = Integer.parseInt(numberText.trim());
-        } catch (NumberFormatException exception) {
-            throw new AlexaException("Please provide a task number, for example: mark 1.");
-        }
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            throw new AlexaException("There is no task " + taskNumber + ". Use list to see the task numbers.");
-        }
-        Task task = TASKS[taskNumber - 1];
+        String command = isDone ? "mark" : "unmark";
+        int taskNumber = getTaskNumber(numberText, command);
+        Task task = TASKS.get(taskNumber - 1);
         if (isDone) {
             task.markAsDone();
         } else {
@@ -129,6 +118,16 @@ public class Alexa {
         System.out.println(isDone ? "Nice! I've marked this task as done:"
                                   : "Ok, I've marked this task as not done yet:");
         System.out.println("  " + task);
+        System.out.println(DIVIDER);
+    }
+    /** Removes one task from the list and confirms the deletion. */
+    private static void deleteTask(String numberText) throws AlexaException {
+        int taskNumber = getTaskNumber(numberText, "delete");
+        Task deletedTask = TASKS.remove(taskNumber - 1);
+        System.out.println(DIVIDER);
+        System.out.println("Noted. I've removed this task:");
+        System.out.println("  " + deletedTask);
+        System.out.println("Now you have " + TASKS.size() + " tasks in the list.");
         System.out.println(DIVIDER);
     }
     /** Prints Alexa's farewell. */
@@ -164,6 +163,19 @@ public class Alexa {
         return value.trim();
     }
 
+    /** Parses and validates a one-based task number for a command. */
+    private static int getTaskNumber(String numberText, String command) throws AlexaException {
+        int taskNumber;
+        try {
+            taskNumber = Integer.parseInt(numberText.trim());
+        } catch (NumberFormatException exception) {
+            throw new AlexaException("Please provide a task number, for example: " + command + " 1.");
+        }
+        if (taskNumber < 1 || taskNumber > TASKS.size()) {
+            throw new AlexaException("There is no task " + taskNumber + ". Use list to see the task numbers.");
+        }
+        return taskNumber;
+    }
     /** Prints an error in Alexa's standard message frame. */
     private static void printError(String message) {
         System.out.println(DIVIDER);
