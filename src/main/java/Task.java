@@ -45,6 +45,22 @@ public abstract class Task {
     }
 
     /**
+     * Returns whether this task has been completed.
+     *
+     * @return {@code true} if this task is complete
+     */
+    protected boolean isDone() {
+        return isDone;
+    }
+
+    /**
+     * Returns this task in the format used by Alexa's data file.
+     *
+     * @return a single line that can later be used to recreate this task
+     */
+    public abstract String toStorageString();
+
+    /**
      * Returns this task in the format shown to the user.
      *
      * @return formatted task details

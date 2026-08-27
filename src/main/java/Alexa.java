@@ -1,4 +1,6 @@
 package src.main.java;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -84,9 +86,10 @@ public class Alexa {
                 requireValue(toParts[1], "end time")));
     }
 
-    /** Stores a task and confirms the addition to the user. */
-    private static void addTask(Task task) {
+    /** Stores a task, saves the updated list, and confirms the addition to the user. */
+    private static void addTask(Task task) throws AlexaException {
         TASKS.add(task);
+        saveTasks();
         System.out.println(DIVIDER);
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + task);
@@ -114,22 +117,35 @@ public class Alexa {
         } else {
             task.unmark();
         }
+        saveTasks();
         System.out.println(DIVIDER);
         System.out.println(isDone ? "Nice! I've marked this task as done:"
                                   : "Ok, I've marked this task as not done yet:");
         System.out.println("  " + task);
         System.out.println(DIVIDER);
     }
-    /** Removes one task from the list and confirms the deletion. */
+
+    /** Removes one task from the list, saves it, and confirms the deletion. */
     private static void deleteTask(String numberText) throws AlexaException {
         int taskNumber = getTaskNumber(numberText, "delete");
         Task deletedTask = TASKS.remove(taskNumber - 1);
+        saveTasks();
         System.out.println(DIVIDER);
         System.out.println("Noted. I've removed this task:");
         System.out.println("  " + deletedTask);
         System.out.println("Now you have " + TASKS.size() + " tasks in the list.");
         System.out.println(DIVIDER);
     }
+
+    /** Saves the current task list and turns write errors into a user-facing message. */
+    private static void saveTasks() throws AlexaException {
+        try {
+            Storage.save(TASKS);
+        } catch (IOException exception) {
+            throw new AlexaException("I could not save your tasks: " + exception.getMessage());
+        }
+    }
+
     /** Prints Alexa's farewell. */
     private static void printFarewell() {
         System.out.println(DIVIDER);
@@ -176,6 +192,7 @@ public class Alexa {
         }
         return taskNumber;
     }
+
     /** Prints an error in Alexa's standard message frame. */
     private static void printError(String message) {
         System.out.println(DIVIDER);

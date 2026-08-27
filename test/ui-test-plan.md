@@ -167,3 +167,42 @@ ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
 ```
+
+## Test case: Save task changes
+
+**Aim:** Verify that adding and marking a task retains the normal user interface while exercising automatic saving.
+
+**Input:**
+
+```text
+todo read book
+mark 1
+unmark 1
+bye
+```
+
+**Expected output:**
+
+```text
+____________________________________________________________
+                 A L E X A
+Hello! I'm Alexa.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [T][ ] read book
+Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+Nice! I've marked this task as done:
+  [T][X] read book
+____________________________________________________________
+____________________________________________________________
+Ok, I've marked this task as not done yet:
+  [T][ ] read book
+____________________________________________________________
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
