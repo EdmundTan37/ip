@@ -16,6 +16,15 @@ public class TaskList {
     }
 
     /**
+     * Creates a task list containing the supplied tasks in their existing order.
+     *
+     * @param tasks the tasks with which to initialise this list
+     */
+    public TaskList(List<Task> tasks) {
+        this.tasks = new ArrayList<>(tasks);
+    }
+
+    /**
      * Adds a task to the end of the list.
      *
      * @param task the task to add

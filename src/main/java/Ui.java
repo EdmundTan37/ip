@@ -86,6 +86,12 @@ public class Ui {
         System.out.println(DIVIDER);
     }
 
+    /** Shows a recoverable error when saved tasks cannot be loaded. */
+    public void showLoadingError() {
+        System.out.println(DIVIDER);
+        System.out.println("OOPS!!! I could not load your saved tasks. Starting with an empty list.");
+        System.out.println(DIVIDER);
+    }
     /** Shows Alexa's farewell. */
     public void showFarewell() {
         System.out.println(DIVIDER);

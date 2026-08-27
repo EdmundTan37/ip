@@ -1,94 +1,117 @@
 package src.main.java;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * Coordinates task commands, storage, and the console user interface.
  */
 public class Alexa {
     /** The task collection and its operations. */
-    private static final TaskList TASKS = new TaskList();
+    private final TaskList tasks;
     /** The component responsible for console interaction. */
-    private static final Ui UI = new Ui();
+    private final Ui ui;
     /** The component responsible for interpreting command text. */
-    private static final Parser PARSER = new Parser();
+    private final Parser parser;
+    /** The component responsible for persistent task data. */
+    private final Storage storage;
 
     /**
-     * Starts Alexa, displays its greeting, and exits.
+     * Creates Alexa with task data stored at the supplied path.
      *
-     * @param args command-line arguments, which are not used
+     * @param dataFile the relative location of Alexa's task data file
      */
-    public static void main(String[] args) {
-        UI.showGreeting();
+    public Alexa(Path dataFile) {
+        ui = new Ui();
+        parser = new Parser();
+        storage = new Storage(dataFile);
+        TaskList loadedTasks;
+        try {
+            loadedTasks = new TaskList(storage.load());
+        } catch (IOException exception) {
+            ui.showLoadingError();
+            loadedTasks = new TaskList();
+        }
+        tasks = loadedTasks;
+    }
 
-        while (UI.hasNextCommand()) {
-            String command = UI.readCommand();
+    /** Runs Alexa's command loop. */
+    public void run() {
+        ui.showGreeting();
+
+        while (ui.hasNextCommand()) {
+            String command = ui.readCommand();
             if (command.equals("bye")) {
-                UI.showFarewell();
+                ui.showFarewell();
                 return;
             }
             try {
                 handleCommand(command);
             } catch (AlexaException exception) {
-                UI.showError(exception.getMessage());
+                ui.showError(exception.getMessage());
             }
         }
     }
 
+    /** Starts Alexa using the standard relative data-file location. */
+    public static void main(String[] args) {
+        new Alexa(Path.of("data", "alexa.txt")).run();
+    }
+
     /** Handles a single command entered by the user. */
-    private static void handleCommand(String command) throws AlexaException {
+    private void handleCommand(String command) throws AlexaException {
         if (command.equals("list")) {
-            UI.showTaskList(TASKS);
-        } else if (PARSER.isCommand(command, "todo")) {
-            addTask(PARSER.parseTodo(PARSER.getArgument(command, "todo")));
-        } else if (PARSER.isCommand(command, "deadline")) {
-            addTask(PARSER.parseDeadline(PARSER.getArgument(command, "deadline")));
-        } else if (PARSER.isCommand(command, "event")) {
-            addTask(PARSER.parseEvent(PARSER.getArgument(command, "event")));
-        } else if (PARSER.isCommand(command, "mark")) {
-            updateTaskStatus(PARSER.getArgument(command, "mark"), true);
-        } else if (PARSER.isCommand(command, "unmark")) {
-            updateTaskStatus(PARSER.getArgument(command, "unmark"), false);
-        } else if (PARSER.isCommand(command, "delete")) {
-            deleteTask(PARSER.getArgument(command, "delete"));
+            ui.showTaskList(tasks);
+        } else if (parser.isCommand(command, "todo")) {
+            addTask(parser.parseTodo(parser.getArgument(command, "todo")));
+        } else if (parser.isCommand(command, "deadline")) {
+            addTask(parser.parseDeadline(parser.getArgument(command, "deadline")));
+        } else if (parser.isCommand(command, "event")) {
+            addTask(parser.parseEvent(parser.getArgument(command, "event")));
+        } else if (parser.isCommand(command, "mark")) {
+            updateTaskStatus(parser.getArgument(command, "mark"), true);
+        } else if (parser.isCommand(command, "unmark")) {
+            updateTaskStatus(parser.getArgument(command, "unmark"), false);
+        } else if (parser.isCommand(command, "delete")) {
+            deleteTask(parser.getArgument(command, "delete"));
         } else {
             throw new AlexaException("I'm sorry, but I don't know what that means :-(");
         }
     }
 
     /** Stores a task, saves the updated list, and confirms the addition to the user. */
-    private static void addTask(Task task) throws AlexaException {
-        TASKS.add(task);
+    private void addTask(Task task) throws AlexaException {
+        tasks.add(task);
         saveTasks();
-        UI.showTaskAdded(task, TASKS.size());
+        ui.showTaskAdded(task, tasks.size());
     }
 
     /** Updates the completion status of one task. */
-    private static void updateTaskStatus(String numberText, boolean isDone) throws AlexaException {
+    private void updateTaskStatus(String numberText, boolean isDone) throws AlexaException {
         String command = isDone ? "mark" : "unmark";
-        int taskNumber = PARSER.parseTaskNumber(numberText, command, TASKS.size());
-        Task task = TASKS.get(taskNumber - 1);
+        int taskNumber = parser.parseTaskNumber(numberText, command, tasks.size());
+        Task task = tasks.get(taskNumber - 1);
         if (isDone) {
             task.markAsDone();
         } else {
             task.unmark();
         }
         saveTasks();
-        UI.showTaskStatus(task, isDone);
+        ui.showTaskStatus(task, isDone);
     }
 
     /** Removes one task from the list, saves it, and confirms the deletion. */
-    private static void deleteTask(String numberText) throws AlexaException {
-        int taskNumber = PARSER.parseTaskNumber(numberText, "delete", TASKS.size());
-        Task deletedTask = TASKS.remove(taskNumber - 1);
+    private void deleteTask(String numberText) throws AlexaException {
+        int taskNumber = parser.parseTaskNumber(numberText, "delete", tasks.size());
+        Task deletedTask = tasks.remove(taskNumber - 1);
         saveTasks();
-        UI.showTaskDeleted(deletedTask, TASKS.size());
+        ui.showTaskDeleted(deletedTask, tasks.size());
     }
 
     /** Saves the current task list and turns write errors into a user-facing message. */
-    private static void saveTasks() throws AlexaException {
+    private void saveTasks() throws AlexaException {
         try {
-            Storage.save(TASKS.asList());
+            storage.save(tasks.asList());
         } catch (IOException exception) {
             throw new AlexaException("I could not save your tasks: " + exception.getMessage());
         }
