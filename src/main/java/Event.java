@@ -1,18 +1,26 @@
 package src.main.java;
 
-/** A task with a start time and an end time. */
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
+/** A task with a start date and an end date. */
 public class Event extends Task {
-    private final String from;
-    private final String to;
+    /** The input format accepted by Alexa commands and used in saved data. */
+    private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
+    /** The friendlier date format displayed to the user. */
+    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
+    private final LocalDate from;
+    private final LocalDate to;
 
     /**
      * Creates an event task.
      *
      * @param description the task description
-     * @param from the start time, kept as text
-     * @param to the end time, kept as text
+     * @param from the event start date
+     * @param to the event end date
      */
-    public Event(String description, String from, String to) {
+    public Event(String description, LocalDate from, LocalDate to) {
         super(description);
         this.from = from;
         this.to = to;
@@ -20,12 +28,13 @@ public class Event extends Task {
 
     @Override
     public String toStorageString() {
-        return "E | " + (isDone() ? "1" : "0") + " | " + getDescription() + " | " + from + " | " + to;
+        return "E | " + (isDone() ? "1" : "0") + " | " + getDescription()
+                + " | " + from.format(INPUT_FORMAT) + " | " + to.format(INPUT_FORMAT);
     }
 
     @Override
     public String toString() {
         return "[E][" + getStatusIcon() + "] " + getDescription()
-                + " (from: " + from + " to: " + to + ")";
+                + " (from: " + from.format(DISPLAY_FORMAT) + " to: " + to.format(DISPLAY_FORMAT) + ")";
     }
 }

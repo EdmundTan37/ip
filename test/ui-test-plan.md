@@ -35,8 +35,8 @@ ____________________________________________________________
 
 ```text
 todo borrow book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
+deadline return book /by 2019-10-15
+event project meeting /from 2019-10-16 /to 2019-10-17
 list
 bye
 ```
@@ -56,19 +56,19 @@ Now you have 1 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this task:
-  [D][ ] return book (by: Sunday)
+  [D][ ] return book (by: Oct 15 2019)
 Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this task:
-  [E][ ] project meeting (from: Mon 2pm to: 4pm)
+  [E][ ] project meeting (from: Oct 16 2019 to: Oct 17 2019)
 Now you have 3 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
 Here are the tasks in your list:
 1.[T][ ] borrow book
-2.[D][ ] return book (by: Sunday)
-3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+2.[D][ ] return book (by: Oct 15 2019)
+3.[E][ ] project meeting (from: Oct 16 2019 to: Oct 17 2019)
 ____________________________________________________________
 ____________________________________________________________
 Bye. Hope to see you again soon!
@@ -201,6 +201,33 @@ ____________________________________________________________
 ____________________________________________________________
 Ok, I've marked this task as not done yet:
   [T][ ] read book
+____________________________________________________________
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+## Test case: Reject an invalid date
+
+**Aim:** Verify that Alexa explains the required date format when a deadline date cannot be parsed.
+
+**Input:**
+
+```text
+deadline return book /by tomorrow
+bye
+```
+
+**Expected output:**
+
+```text
+____________________________________________________________
+                 A L E X A
+Hello! I'm Alexa.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+OOPS!!! The deadline date must use yyyy-MM-dd, for example 2019-10-15.
 ____________________________________________________________
 ____________________________________________________________
 Bye. Hope to see you again soon!

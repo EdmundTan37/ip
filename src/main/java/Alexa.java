@@ -1,6 +1,8 @@
 package src.main.java;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -62,28 +64,28 @@ public class Alexa {
         }
     }
 
-    /** Adds a deadline from text in the form {@code description /by deadline}. */
+    /** Adds a deadline from text in the form {@code description /by yyyy-MM-dd}. */
     private static void addDeadline(String details) throws AlexaException {
         String[] parts = details.split(" /by ", 2);
         if (parts.length != 2) {
-            throw new AlexaException("A deadline needs a description and a due date: deadline DESCRIPTION /by DATE.");
+            throw new AlexaException("A deadline needs a description and date: deadline DESCRIPTION /by yyyy-MM-dd.");
         }
-        addTask(new Deadline(requireDescription(parts[0], "deadline"), requireValue(parts[1], "due date")));
+        addTask(new Deadline(requireDescription(parts[0], "deadline"), parseDate(parts[1], "deadline date")));
     }
 
-    /** Adds an event from text in the form {@code description /from start /to end}. */
+    /** Adds an event from text in the form {@code description /from yyyy-MM-dd /to yyyy-MM-dd}. */
     private static void addEvent(String details) throws AlexaException {
         String[] fromParts = details.split(" /from ", 2);
         if (fromParts.length != 2) {
-            throw new AlexaException("An event needs a description, start time, and end time: "
-                    + "event DESCRIPTION /from START /to END.");
+            throw new AlexaException("An event needs a description, start date, and end date: "
+                    + "event DESCRIPTION /from yyyy-MM-dd /to yyyy-MM-dd.");
         }
         String[] toParts = fromParts[1].split(" /to ", 2);
         if (toParts.length != 2) {
-            throw new AlexaException("An event needs an end time after /to.");
+            throw new AlexaException("An event needs an end date after /to.");
         }
-        addTask(new Event(requireDescription(fromParts[0], "event"), requireValue(toParts[0], "start time"),
-                requireValue(toParts[1], "end time")));
+        addTask(new Event(requireDescription(fromParts[0], "event"), parseDate(toParts[0], "event start date"),
+                parseDate(toParts[1], "event end date")));
     }
 
     /** Stores a task, saves the updated list, and confirms the addition to the user. */
@@ -135,6 +137,15 @@ public class Alexa {
         System.out.println("  " + deletedTask);
         System.out.println("Now you have " + TASKS.size() + " tasks in the list.");
         System.out.println(DIVIDER);
+    }
+
+    /** Parses a date in the required {@code yyyy-MM-dd} command format. */
+    private static LocalDate parseDate(String dateText, String dateName) throws AlexaException {
+        try {
+            return LocalDate.parse(requireValue(dateText, dateName));
+        } catch (DateTimeParseException exception) {
+            throw new AlexaException("The " + dateName + " must use yyyy-MM-dd, for example 2019-10-15.");
+        }
     }
 
     /** Saves the current task list and turns write errors into a user-facing message. */
