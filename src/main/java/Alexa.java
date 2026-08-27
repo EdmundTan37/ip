@@ -3,7 +3,6 @@ package src.main.java;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -12,8 +11,8 @@ import java.util.Scanner;
 public class Alexa {
     /** A visual divider used to frame the chatbot's messages. */
     private static final String DIVIDER = "____________________________________________________________";
-    /** The dynamically sized task list. Each item can be any subtype of {@link Task}. */
-    private static final ArrayList<Task> TASKS = new ArrayList<>();
+    /** The task collection and its operations. */
+    private static final TaskList TASKS = new TaskList();
 
     /**
      * Starts Alexa, displays its greeting, and exits.
@@ -151,7 +150,7 @@ public class Alexa {
     /** Saves the current task list and turns write errors into a user-facing message. */
     private static void saveTasks() throws AlexaException {
         try {
-            Storage.save(TASKS);
+            Storage.save(TASKS.asList());
         } catch (IOException exception) {
             throw new AlexaException("I could not save your tasks: " + exception.getMessage());
         }
