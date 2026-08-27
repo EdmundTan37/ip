@@ -3,16 +3,15 @@ package src.main.java;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.Scanner;
 
 /**
- * A chatbot that greets the user before ending the program.
+ * Coordinates task commands, storage, and the console user interface.
  */
 public class Alexa {
-    /** A visual divider used to frame the chatbot's messages. */
-    private static final String DIVIDER = "____________________________________________________________";
     /** The task collection and its operations. */
     private static final TaskList TASKS = new TaskList();
+    /** The component responsible for console interaction. */
+    private static final Ui UI = new Ui();
 
     /**
      * Starts Alexa, displays its greeting, and exits.
@@ -20,24 +19,18 @@ public class Alexa {
      * @param args command-line arguments, which are not used
      */
     public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
+        UI.showGreeting();
 
-        System.out.println(DIVIDER);
-        System.out.println("                 A L E X A");
-        System.out.println("Hello! I'm Alexa.");
-        System.out.println("What can I do for you?");
-        System.out.println(DIVIDER);
-
-        while (input.hasNextLine()) {
-            String command = input.nextLine();
+        while (UI.hasNextCommand()) {
+            String command = UI.readCommand();
             if (command.equals("bye")) {
-                printFarewell();
+                UI.showFarewell();
                 return;
             }
             try {
                 handleCommand(command);
             } catch (AlexaException exception) {
-                printError(exception.getMessage());
+                UI.showError(exception.getMessage());
             }
         }
     }
@@ -45,7 +38,7 @@ public class Alexa {
     /** Handles a single command entered by the user. */
     private static void handleCommand(String command) throws AlexaException {
         if (command.equals("list")) {
-            printTaskList();
+            UI.showTaskList(TASKS);
         } else if (isCommand(command, "todo")) {
             addTask(new Todo(requireDescription(argumentAfter(command, "todo"), "todo")));
         } else if (isCommand(command, "deadline")) {
@@ -91,21 +84,7 @@ public class Alexa {
     private static void addTask(Task task) throws AlexaException {
         TASKS.add(task);
         saveTasks();
-        System.out.println(DIVIDER);
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + task);
-        System.out.println("Now you have " + TASKS.size() + " tasks in the list.");
-        System.out.println(DIVIDER);
-    }
-
-    /** Prints every task currently stored. */
-    private static void printTaskList() {
-        System.out.println(DIVIDER);
-        System.out.println("Here are the tasks in your list:");
-        for (int index = 0; index < TASKS.size(); index++) {
-            System.out.println((index + 1) + "." + TASKS.get(index));
-        }
-        System.out.println(DIVIDER);
+        UI.showTaskAdded(task, TASKS.size());
     }
 
     /** Updates the completion status of one task. */
@@ -119,11 +98,7 @@ public class Alexa {
             task.unmark();
         }
         saveTasks();
-        System.out.println(DIVIDER);
-        System.out.println(isDone ? "Nice! I've marked this task as done:"
-                                  : "Ok, I've marked this task as not done yet:");
-        System.out.println("  " + task);
-        System.out.println(DIVIDER);
+        UI.showTaskStatus(task, isDone);
     }
 
     /** Removes one task from the list, saves it, and confirms the deletion. */
@@ -131,11 +106,7 @@ public class Alexa {
         int taskNumber = getTaskNumber(numberText, "delete");
         Task deletedTask = TASKS.remove(taskNumber - 1);
         saveTasks();
-        System.out.println(DIVIDER);
-        System.out.println("Noted. I've removed this task:");
-        System.out.println("  " + deletedTask);
-        System.out.println("Now you have " + TASKS.size() + " tasks in the list.");
-        System.out.println(DIVIDER);
+        UI.showTaskDeleted(deletedTask, TASKS.size());
     }
 
     /** Parses a date in the required {@code yyyy-MM-dd} command format. */
@@ -154,13 +125,6 @@ public class Alexa {
         } catch (IOException exception) {
             throw new AlexaException("I could not save your tasks: " + exception.getMessage());
         }
-    }
-
-    /** Prints Alexa's farewell. */
-    private static void printFarewell() {
-        System.out.println(DIVIDER);
-        System.out.println("Bye. Hope to see you again soon!");
-        System.out.println(DIVIDER);
     }
 
     /** Returns whether the input contains a command followed by whitespace or nothing. */
@@ -201,12 +165,5 @@ public class Alexa {
             throw new AlexaException("There is no task " + taskNumber + ". Use list to see the task numbers.");
         }
         return taskNumber;
-    }
-
-    /** Prints an error in Alexa's standard message frame. */
-    private static void printError(String message) {
-        System.out.println(DIVIDER);
-        System.out.println("OOPS!!! " + message);
-        System.out.println(DIVIDER);
     }
 }
