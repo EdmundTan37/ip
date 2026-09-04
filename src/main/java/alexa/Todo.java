@@ -1,4 +1,4 @@
-package src.main.java;
+package alexa;
 
 /** A task without a date or time. */
 public class Todo extends Task {

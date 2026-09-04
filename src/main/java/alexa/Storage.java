@@ -1,4 +1,4 @@
-package src.main.java;
+package alexa;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
