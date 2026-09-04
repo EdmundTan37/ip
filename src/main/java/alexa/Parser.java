@@ -1,4 +1,4 @@
-package src.main.java;
+package alexa;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;

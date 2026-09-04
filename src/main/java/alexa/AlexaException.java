@@ -1,4 +1,4 @@
-package src.main.java;
+package alexa;
 
 /** Represents an error caused by an invalid command entered into Alexa. */
 public class AlexaException extends Exception {

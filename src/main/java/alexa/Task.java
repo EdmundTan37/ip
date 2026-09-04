@@ -1,4 +1,4 @@
-package src.main.java;
+package alexa;
 
 /**
  * Represents a task that can be completed or left incomplete.
