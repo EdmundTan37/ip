@@ -1,213 +1,119 @@
 package src.main.java;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.nio.file.Path;
 
 /**
- * A chatbot that greets the user before ending the program.
+ * Coordinates task commands, storage, and the console user interface.
  */
 public class Alexa {
-    /** A visual divider used to frame the chatbot's messages. */
-    private static final String DIVIDER = "____________________________________________________________";
-    /** The dynamically sized task list. Each item can be any subtype of {@link Task}. */
-    private static final ArrayList<Task> TASKS = new ArrayList<>();
+    /** The task collection and its operations. */
+    private final TaskList tasks;
+    /** The component responsible for console interaction. */
+    private final Ui ui;
+    /** The component responsible for interpreting command text. */
+    private final Parser parser;
+    /** The component responsible for persistent task data. */
+    private final Storage storage;
 
     /**
-     * Starts Alexa, displays its greeting, and exits.
+     * Creates Alexa with task data stored at the supplied path.
      *
-     * @param args command-line arguments, which are not used
+     * @param dataFile the relative location of Alexa's task data file
      */
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
+    public Alexa(Path dataFile) {
+        ui = new Ui();
+        parser = new Parser();
+        storage = new Storage(dataFile);
+        TaskList loadedTasks;
+        try {
+            loadedTasks = new TaskList(storage.load());
+        } catch (IOException exception) {
+            ui.showLoadingError();
+            loadedTasks = new TaskList();
+        }
+        tasks = loadedTasks;
+    }
 
-        System.out.println(DIVIDER);
-        System.out.println("                 A L E X A");
-        System.out.println("Hello! I'm Alexa.");
-        System.out.println("What can I do for you?");
-        System.out.println(DIVIDER);
+    /** Runs Alexa's command loop. */
+    public void run() {
+        ui.showGreeting();
 
-        while (input.hasNextLine()) {
-            String command = input.nextLine();
+        while (ui.hasNextCommand()) {
+            String command = ui.readCommand();
             if (command.equals("bye")) {
-                printFarewell();
+                ui.showFarewell();
                 return;
             }
             try {
                 handleCommand(command);
             } catch (AlexaException exception) {
-                printError(exception.getMessage());
+                ui.showError(exception.getMessage());
             }
         }
     }
 
+    /** Starts Alexa using the standard relative data-file location. */
+    public static void main(String[] args) {
+        new Alexa(Path.of("data", "alexa.txt")).run();
+    }
+
     /** Handles a single command entered by the user. */
-    private static void handleCommand(String command) throws AlexaException {
+    private void handleCommand(String command) throws AlexaException {
         if (command.equals("list")) {
-            printTaskList();
-        } else if (isCommand(command, "todo")) {
-            addTask(new Todo(requireDescription(argumentAfter(command, "todo"), "todo")));
-        } else if (isCommand(command, "deadline")) {
-            addDeadline(argumentAfter(command, "deadline"));
-        } else if (isCommand(command, "event")) {
-            addEvent(argumentAfter(command, "event"));
-        } else if (isCommand(command, "mark")) {
-            updateTaskStatus(argumentAfter(command, "mark"), true);
-        } else if (isCommand(command, "unmark")) {
-            updateTaskStatus(argumentAfter(command, "unmark"), false);
-        } else if (isCommand(command, "delete")) {
-            deleteTask(argumentAfter(command, "delete"));
+            ui.showTaskList(tasks);
+        } else if (parser.isCommand(command, "todo")) {
+            addTask(parser.parseTodo(parser.getArgument(command, "todo")));
+        } else if (parser.isCommand(command, "deadline")) {
+            addTask(parser.parseDeadline(parser.getArgument(command, "deadline")));
+        } else if (parser.isCommand(command, "event")) {
+            addTask(parser.parseEvent(parser.getArgument(command, "event")));
+        } else if (parser.isCommand(command, "mark")) {
+            updateTaskStatus(parser.getArgument(command, "mark"), true);
+        } else if (parser.isCommand(command, "unmark")) {
+            updateTaskStatus(parser.getArgument(command, "unmark"), false);
+        } else if (parser.isCommand(command, "delete")) {
+            deleteTask(parser.getArgument(command, "delete"));
         } else {
             throw new AlexaException("I'm sorry, but I don't know what that means :-(");
         }
     }
 
-    /** Adds a deadline from text in the form {@code description /by yyyy-MM-dd}. */
-    private static void addDeadline(String details) throws AlexaException {
-        String[] parts = details.split(" /by ", 2);
-        if (parts.length != 2) {
-            throw new AlexaException("A deadline needs a description and date: deadline DESCRIPTION /by yyyy-MM-dd.");
-        }
-        addTask(new Deadline(requireDescription(parts[0], "deadline"), parseDate(parts[1], "deadline date")));
-    }
-
-    /** Adds an event from text in the form {@code description /from yyyy-MM-dd /to yyyy-MM-dd}. */
-    private static void addEvent(String details) throws AlexaException {
-        String[] fromParts = details.split(" /from ", 2);
-        if (fromParts.length != 2) {
-            throw new AlexaException("An event needs a description, start date, and end date: "
-                    + "event DESCRIPTION /from yyyy-MM-dd /to yyyy-MM-dd.");
-        }
-        String[] toParts = fromParts[1].split(" /to ", 2);
-        if (toParts.length != 2) {
-            throw new AlexaException("An event needs an end date after /to.");
-        }
-        addTask(new Event(requireDescription(fromParts[0], "event"), parseDate(toParts[0], "event start date"),
-                parseDate(toParts[1], "event end date")));
-    }
-
     /** Stores a task, saves the updated list, and confirms the addition to the user. */
-    private static void addTask(Task task) throws AlexaException {
-        TASKS.add(task);
+    private void addTask(Task task) throws AlexaException {
+        tasks.add(task);
         saveTasks();
-        System.out.println(DIVIDER);
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + task);
-        System.out.println("Now you have " + TASKS.size() + " tasks in the list.");
-        System.out.println(DIVIDER);
-    }
-
-    /** Prints every task currently stored. */
-    private static void printTaskList() {
-        System.out.println(DIVIDER);
-        System.out.println("Here are the tasks in your list:");
-        for (int index = 0; index < TASKS.size(); index++) {
-            System.out.println((index + 1) + "." + TASKS.get(index));
-        }
-        System.out.println(DIVIDER);
+        ui.showTaskAdded(task, tasks.size());
     }
 
     /** Updates the completion status of one task. */
-    private static void updateTaskStatus(String numberText, boolean isDone) throws AlexaException {
+    private void updateTaskStatus(String numberText, boolean isDone) throws AlexaException {
         String command = isDone ? "mark" : "unmark";
-        int taskNumber = getTaskNumber(numberText, command);
-        Task task = TASKS.get(taskNumber - 1);
+        int taskNumber = parser.parseTaskNumber(numberText, command, tasks.size());
+        Task task = tasks.get(taskNumber - 1);
         if (isDone) {
             task.markAsDone();
         } else {
             task.unmark();
         }
         saveTasks();
-        System.out.println(DIVIDER);
-        System.out.println(isDone ? "Nice! I've marked this task as done:"
-                                  : "Ok, I've marked this task as not done yet:");
-        System.out.println("  " + task);
-        System.out.println(DIVIDER);
+        ui.showTaskStatus(task, isDone);
     }
 
     /** Removes one task from the list, saves it, and confirms the deletion. */
-    private static void deleteTask(String numberText) throws AlexaException {
-        int taskNumber = getTaskNumber(numberText, "delete");
-        Task deletedTask = TASKS.remove(taskNumber - 1);
+    private void deleteTask(String numberText) throws AlexaException {
+        int taskNumber = parser.parseTaskNumber(numberText, "delete", tasks.size());
+        Task deletedTask = tasks.remove(taskNumber - 1);
         saveTasks();
-        System.out.println(DIVIDER);
-        System.out.println("Noted. I've removed this task:");
-        System.out.println("  " + deletedTask);
-        System.out.println("Now you have " + TASKS.size() + " tasks in the list.");
-        System.out.println(DIVIDER);
-    }
-
-    /** Parses a date in the required {@code yyyy-MM-dd} command format. */
-    private static LocalDate parseDate(String dateText, String dateName) throws AlexaException {
-        try {
-            return LocalDate.parse(requireValue(dateText, dateName));
-        } catch (DateTimeParseException exception) {
-            throw new AlexaException("The " + dateName + " must use yyyy-MM-dd, for example 2019-10-15.");
-        }
+        ui.showTaskDeleted(deletedTask, tasks.size());
     }
 
     /** Saves the current task list and turns write errors into a user-facing message. */
-    private static void saveTasks() throws AlexaException {
+    private void saveTasks() throws AlexaException {
         try {
-            Storage.save(TASKS);
+            storage.save(tasks.asList());
         } catch (IOException exception) {
             throw new AlexaException("I could not save your tasks: " + exception.getMessage());
         }
-    }
-
-    /** Prints Alexa's farewell. */
-    private static void printFarewell() {
-        System.out.println(DIVIDER);
-        System.out.println("Bye. Hope to see you again soon!");
-        System.out.println(DIVIDER);
-    }
-
-    /** Returns whether the input contains a command followed by whitespace or nothing. */
-    private static boolean isCommand(String command, String commandWord) {
-        return command.equals(commandWord) || command.startsWith(commandWord + " ");
-    }
-
-    /** Returns the text entered after a command word. */
-    private static String argumentAfter(String command, String commandWord) {
-        return command.substring(commandWord.length()).trim();
-    }
-
-    /** Requires a non-empty task description. */
-    private static String requireDescription(String description, String taskType) throws AlexaException {
-        if (description.trim().isEmpty()) {
-            throw new AlexaException("The description of a " + taskType + " cannot be empty.");
-        }
-        return description.trim();
-    }
-
-    /** Requires a non-empty value for a task detail such as a deadline or time. */
-    private static String requireValue(String value, String valueName) throws AlexaException {
-        if (value.trim().isEmpty()) {
-            throw new AlexaException("The " + valueName + " cannot be empty.");
-        }
-        return value.trim();
-    }
-
-    /** Parses and validates a one-based task number for a command. */
-    private static int getTaskNumber(String numberText, String command) throws AlexaException {
-        int taskNumber;
-        try {
-            taskNumber = Integer.parseInt(numberText.trim());
-        } catch (NumberFormatException exception) {
-            throw new AlexaException("Please provide a task number, for example: " + command + " 1.");
-        }
-        if (taskNumber < 1 || taskNumber > TASKS.size()) {
-            throw new AlexaException("There is no task " + taskNumber + ". Use list to see the task numbers.");
-        }
-        return taskNumber;
-    }
-
-    /** Prints an error in Alexa's standard message frame. */
-    private static void printError(String message) {
-        System.out.println(DIVIDER);
-        System.out.println("OOPS!!! " + message);
-        System.out.println(DIVIDER);
     }
 }
