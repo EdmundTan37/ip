@@ -11,6 +11,7 @@ import java.util.List;
 
 /** Loads tasks from and saves tasks to a platform-independent data file. */
 public class Storage {
+    /** The relative path of the file containing saved tasks. */
     private final Path dataFile;
 
     /**

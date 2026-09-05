@@ -23,11 +23,21 @@ public class Deadline extends Task {
         this.by = by;
     }
 
+    /**
+     * Returns this deadline in the line format used for persistence.
+     *
+     * @return the saved representation of this deadline
+     */
     @Override
     public String toStorageString() {
         return "D | " + (isDone() ? "1" : "0") + " | " + getDescription() + " | " + by.format(INPUT_FORMAT);
     }
 
+    /**
+     * Returns this deadline in Alexa's user-facing display format.
+     *
+     * @return the formatted deadline
+     */
     @Override
     public String toString() {
         return "[D][" + getStatusIcon() + "] " + getDescription() + " (by: " + by.format(DISPLAY_FORMAT) + ")";
