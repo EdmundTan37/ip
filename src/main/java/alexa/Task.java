@@ -10,7 +10,7 @@ public abstract class Task {
     /**
      * Creates a task with the given description.
      *
-     * @param description the task description
+     * @param description The task description.
      */
     protected Task(String description) {
         this.description = description;
@@ -29,7 +29,7 @@ public abstract class Task {
     /**
      * Returns the status icon for this task.
      *
-     * @return {@code X} when completed, otherwise a space
+     * @return {@code X} when completed, otherwise a space.
      */
     protected String getStatusIcon() {
         return isDone ? "X" : " ";
@@ -38,7 +38,7 @@ public abstract class Task {
     /**
      * Returns the common description of this task.
      *
-     * @return the task description
+     * @return The task description.
      */
     protected String getDescription() {
         return description;
@@ -47,7 +47,7 @@ public abstract class Task {
     /**
      * Returns whether this task has been completed.
      *
-     * @return {@code true} if this task is complete
+     * @return {@code true} if this task is complete.
      */
     protected boolean isDone() {
         return isDone;
@@ -56,14 +56,14 @@ public abstract class Task {
     /**
      * Returns this task in the format used by Alexa's data file.
      *
-     * @return a single line that can later be used to recreate this task
+     * @return A single line that can later be used to recreate this task.
      */
     public abstract String toStorageString();
 
     /**
      * Returns this task in the format shown to the user.
      *
-     * @return formatted task details
+     * @return Formatted task details.
      */
     @Override
     public abstract String toString();

@@ -25,8 +25,8 @@ public class Storage {
     /**
      * Loads every saved task, or returns an empty list when the data file does not exist yet.
      *
-     * @return the loaded tasks in their saved order
-     * @throws IOException if the data file cannot be read or contains invalid task data
+     * @return The loaded tasks in their saved order.
+     * @throws IOException If the data file cannot be read or contains invalid task data.
      */
     public List<Task> load() throws IOException {
         if (Files.notExists(dataFile)) {
@@ -42,8 +42,8 @@ public class Storage {
     /**
      * Writes every task to the data file, creating its parent directory when needed.
      *
-     * @param tasks the tasks to save
-     * @throws IOException if the data file cannot be written
+     * @param tasks The tasks to save.
+     * @throws IOException If the data file cannot be written.
      */
     public void save(List<Task> tasks) throws IOException {
         Path parentDirectory = dataFile.getParent();
@@ -61,10 +61,10 @@ public class Storage {
             throw new IOException("Invalid task data: " + taskLine);
         }
         Task task = switch (fields[0]) {
-        case "T" -> createTodo(fields, taskLine);
-        case "D" -> createDeadline(fields, taskLine);
-        case "E" -> createEvent(fields, taskLine);
-        default -> throw new IOException("Unknown task type: " + fields[0]);
+            case "T" -> createTodo(fields, taskLine);
+            case "D" -> createDeadline(fields, taskLine);
+            case "E" -> createEvent(fields, taskLine);
+            default -> throw new IOException("Unknown task type: " + fields[0]);
         };
         restoreStatus(task, fields[1], taskLine);
         return task;
