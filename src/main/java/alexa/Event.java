@@ -26,12 +26,22 @@ public class Event extends Task {
         this.to = to;
     }
 
+    /**
+     * Returns this event in the line format used for persistence.
+     *
+     * @return the saved representation of this event
+     */
     @Override
     public String toStorageString() {
         return "E | " + (isDone() ? "1" : "0") + " | " + getDescription()
                 + " | " + from.format(INPUT_FORMAT) + " | " + to.format(INPUT_FORMAT);
     }
 
+    /**
+     * Returns this event in Alexa's user-facing display format.
+     *
+     * @return the formatted event
+     */
     @Override
     public String toString() {
         return "[E][" + getStatusIcon() + "] " + getDescription()
