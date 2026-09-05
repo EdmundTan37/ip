@@ -64,8 +64,9 @@ public class Ui {
     /** Shows confirmation after a task's completion status changes. */
     public void showTaskStatus(Task task, boolean isDone) {
         System.out.println(DIVIDER);
-        System.out.println(isDone ? "Nice! I've marked this task as done:"
-                                  : "Ok, I've marked this task as not done yet:");
+        System.out.println(isDone
+                ? "Nice! I've marked this task as done:"
+                : "Ok, I've marked this task as not done yet:");
         System.out.println("  " + task);
         System.out.println(DIVIDER);
     }
@@ -92,6 +93,7 @@ public class Ui {
         System.out.println("OOPS!!! I could not load your saved tasks. Starting with an empty list.");
         System.out.println(DIVIDER);
     }
+
     /** Shows Alexa's farewell. */
     public void showFarewell() {
         System.out.println(DIVIDER);

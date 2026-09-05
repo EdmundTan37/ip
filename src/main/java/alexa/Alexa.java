@@ -19,7 +19,7 @@ public class Alexa {
     /**
      * Creates Alexa with task data stored at the supplied path.
      *
-     * @param dataFile the relative location of Alexa's task data file
+     * @param dataFile The relative location of Alexa's task data file.
      */
     public Alexa(Path dataFile) {
         ui = new Ui();

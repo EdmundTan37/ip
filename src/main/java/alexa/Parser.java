@@ -10,9 +10,9 @@ public class Parser {
     /**
      * Returns whether the input contains a command followed by whitespace or nothing.
      *
-     * @param command the complete user command
-     * @param commandWord the command word to check
-     * @return whether the command word matches
+     * @param command The complete user command.
+     * @param commandWord The command word to check.
+     * @return Whether the command word matches.
      */
     public boolean isCommand(String command, String commandWord) {
         return command.equals(commandWord) || command.startsWith(commandWord + " ");
@@ -21,9 +21,9 @@ public class Parser {
     /**
      * Returns the text entered after a command word.
      *
-     * @param command the complete user command
-     * @param commandWord the command word at the start of the command
-     * @return the trimmed command argument
+     * @param command The complete user command.
+     * @param commandWord The command word at the start of the command.
+     * @return The trimmed command argument.
      */
     public String getArgument(String command, String commandWord) {
         return command.substring(commandWord.length()).trim();

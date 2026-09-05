@@ -18,7 +18,7 @@ public class TaskList {
     /**
      * Creates a task list containing the supplied tasks in their existing order.
      *
-     * @param tasks the tasks with which to initialise this list
+     * @param tasks The tasks with which to initialize this list.
      */
     public TaskList(List<Task> tasks) {
         this.tasks = new ArrayList<>(tasks);
@@ -27,7 +27,7 @@ public class TaskList {
     /**
      * Adds a task to the end of the list.
      *
-     * @param task the task to add
+     * @param task The task to add.
      */
     public void add(Task task) {
         tasks.add(task);
@@ -36,8 +36,8 @@ public class TaskList {
     /**
      * Returns the task at a zero-based position.
      *
-     * @param index the zero-based task position
-     * @return the requested task
+     * @param index The zero-based task position.
+     * @return The requested task.
      */
     public Task get(int index) {
         return tasks.get(index);
@@ -46,8 +46,8 @@ public class TaskList {
     /**
      * Removes and returns the task at a zero-based position.
      *
-     * @param index the zero-based task position
-     * @return the removed task
+     * @param index The zero-based task position.
+     * @return The removed task.
      */
     public Task remove(int index) {
         return tasks.remove(index);
@@ -56,7 +56,7 @@ public class TaskList {
     /**
      * Returns the number of tasks in this list.
      *
-     * @return the task count
+     * @return The task count.
      */
     public int size() {
         return tasks.size();
@@ -65,7 +65,7 @@ public class TaskList {
     /**
      * Returns a read-only view of the tasks for persistence.
      *
-     * @return the tasks in their current order
+     * @return The tasks in their current order.
      */
     public List<Task> asList() {
         return Collections.unmodifiableList(tasks);

@@ -32,6 +32,11 @@ Ensure that Java 25 is used when running the application or build tasks. On macO
 
 Maintain JUnit tests for approximately the top 50% of highest-value methods, prioritizing complex, core, and critical business logic. Update the relevant JUnit tests after every code change so this coverage target continues to be met.
 
+## Coding standards
+
+All production and test Java code in this project must follow the project-local `seedu-java-coding-standard` skill at `.codex/skills/seedu-java-coding-standard/SKILL.md`. Apply it to every new or modified Java file.
+
+Every future Git commit must follow the project-local `seedu-git-standard` skill at `.codex/skills/seedu-git-standard/SKILL.md`. This does not override the requirement to obtain explicit authorization before committing or pushing.
 ## Git
 
 Use lightweight tags unless the user requests an annotated tag.
