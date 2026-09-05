@@ -62,6 +62,8 @@ public class Alexa {
     private void handleCommand(String command) throws AlexaException {
         if (command.equals("list")) {
             ui.showTaskList(tasks);
+        } else if (parser.isCommand(command, "find")) {
+            ui.showMatchingTasks(tasks.findTasks(parser.parseFindKeyword(parser.getArgument(command, "find"))));
         } else if (parser.isCommand(command, "todo")) {
             addTask(parser.parseTodo(parser.getArgument(command, "todo")));
         } else if (parser.isCommand(command, "deadline")) {

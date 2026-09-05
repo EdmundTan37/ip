@@ -1,11 +1,23 @@
 package alexa;
 
+import java.util.Locale;
+
 /**
  * Represents a task that can be completed or left incomplete.
  */
 public abstract class Task {
     private final String description;
     private boolean isDone;
+
+    /**
+     * Returns whether this task description contains the given keyword, ignoring case.
+     *
+     * @param keyword The keyword to search for.
+     * @return Whether the description contains the keyword.
+     */
+    public boolean hasDescriptionContaining(String keyword) {
+        return description.toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT));
+    }
 
     /**
      * Creates a task with the given description.

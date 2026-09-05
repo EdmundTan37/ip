@@ -233,3 +233,49 @@ ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
 ```
+## Test case: Find matching tasks
+
+**Aim:** Verify that `find` returns every task whose description contains the keyword, ignoring case.
+
+**Input:**
+
+```text
+todo read book
+deadline return book /by 2019-10-15
+todo buy groceries
+find BOOK
+bye
+```
+
+**Expected output:**
+
+```text
+____________________________________________________________
+                 A L E X A
+Hello! I'm Alexa.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [T][ ] read book
+Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [D][ ] return book (by: Oct 15 2019)
+Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [T][ ] buy groceries
+Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+Here are the matching tasks in your list:
+1.[T][ ] read book
+2.[D][ ] return book (by: Oct 15 2019)
+____________________________________________________________
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
