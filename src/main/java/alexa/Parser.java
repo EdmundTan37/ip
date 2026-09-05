@@ -34,6 +34,14 @@ public class Parser {
         return new Todo(requireDescription(details, "todo"));
     }
 
+    /** Parses and validates the keyword for a find command. */
+    public String parseFindKeyword(String keyword) throws AlexaException {
+        if (keyword.trim().isEmpty()) {
+            throw new AlexaException("The keyword for a find command cannot be empty.");
+        }
+        return keyword.trim();
+    }
+
     /** Parses the arguments for a deadline command. */
     public Deadline parseDeadline(String details) throws AlexaException {
         String[] parts = details.split(" /by ", 2);

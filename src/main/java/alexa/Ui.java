@@ -1,5 +1,6 @@
 package alexa;
 
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -48,6 +49,16 @@ public class Ui {
         System.out.println("Here are the tasks in your list:");
         for (int index = 0; index < tasks.size(); index++) {
             System.out.println((index + 1) + "." + tasks.get(index));
+        }
+        System.out.println(DIVIDER);
+    }
+
+    /** Shows every task whose description matches a find keyword. */
+    public void showMatchingTasks(List<Task> matchingTasks) {
+        System.out.println(DIVIDER);
+        System.out.println("Here are the matching tasks in your list:");
+        for (int index = 0; index < matchingTasks.size(); index++) {
+            System.out.println((index + 1) + "." + matchingTasks.get(index));
         }
         System.out.println(DIVIDER);
     }

@@ -18,6 +18,18 @@ class ParserTest {
     }
 
     @Test
+    void parseFindKeyword_surroundingWhitespace_returnsTrimmedKeyword() throws AlexaException {
+        assertEquals("book", parser.parseFindKeyword("  book  "));
+    }
+
+    @Test
+    void parseFindKeyword_blankKeyword_throwsException() {
+        AlexaException exception = assertThrows(AlexaException.class, () -> parser.parseFindKeyword("  "));
+
+        assertEquals("The keyword for a find command cannot be empty.", exception.getMessage());
+    }
+
+    @Test
     void isCommand_exactCommand_returnsTrue() {
         assertTrue(parser.isCommand("list", "list"));
     }
