@@ -1,21 +1,35 @@
-# Alexa
+##### Alexa 🤖
 
-This is the Alexa chatbot project. Given below are instructions on how to use it.
+> “Small steps every day lead to big results.”
 
-## Setting up in Intellij
+Alexa is a simple command-line task manager that helps you keep track of what needs doing. It is:
 
-Prerequisites: JDK 25, update Intellij to the most recent version.
+- text-based
+- easy to learn
+- ~~complicated~~ *simple* and **fast** to use
 
-1. Open Intellij (if you are not in the welcome screen, click `File` > `Close Project` to close the existing project first)
-1. Open the project into Intellij as follows:
-   1. Click `Open`.
-   1. Select the project directory, and click `OK`.
-   1. If there are any further prompts, accept the defaults.
-1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
-   In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/Alexa.java` file, right-click it, and choose `Run Alexa.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see something like the below as the output:
-   ```
-   Hello! I am Alexa.
-   ```
+All you need to do is:
 
-**Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+1. download the application from the [course project page](https://github.com/EdmundTan37/ip/releases).
+2. run the JAR file.
+3. enter tasks such as `todo read book`.
+4. let Alexa organize them for you 😉
+
+Features:
+
+- [x] To-do tasks
+- [x] Deadlines and events
+- [x] Marking, unmarking, and deleting tasks
+- [x] Keyword search using `find KEYWORD`
+- [x] Automatic task saving
+- [ ] Reminders — coming soon
+
+---
+
+If you are a Java programmer, you can also use Alexa to practise Java. Its entry point is:
+
+```java
+public static void main(String[] args) {
+    new Alexa(Path.of("data", "alexa.txt")).run();
+}
+```
