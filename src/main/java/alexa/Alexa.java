@@ -52,11 +52,10 @@ public class Alexa {
 
         while (ui.hasNextCommand()) {
             String command = ui.readCommand();
+            ui.showResponse(getResponse(command));
             if (command.equals(BYE_COMMAND)) {
-                ui.showFarewell();
                 return;
             }
-            ui.showResponse(getResponse(command));
         }
     }
 
