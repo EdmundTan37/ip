@@ -279,3 +279,41 @@ ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
 ```
+
+## Test case: Reject a duplicate task
+
+**Aim:** Verify that Alexa rejects an identical new task, identifies the existing task number, and leaves the list unchanged.
+
+**Input:**
+
+```text
+todo read book
+todo read book
+list
+bye
+```
+
+**Expected output:**
+
+```text
+____________________________________________________________
+                 A L E X A
+Hello! I'm Alexa.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [T][ ] read book
+Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+OOPS!!! This task already exists in task 1.
+____________________________________________________________
+____________________________________________________________
+Here are the tasks in your list:
+1.[T][ ] read book
+____________________________________________________________
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```

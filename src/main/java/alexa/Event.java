@@ -27,6 +27,22 @@ public class Event extends Task {
     }
 
     /**
+     * Returns whether another task is an identical event.
+     *
+     * @param other The task to compare with this event.
+     * @return {@code true} if both events have the same description, start date, and end date.
+     */
+    @Override
+    public boolean hasSameIdentity(Task other) {
+        if (!(other instanceof Event event)) {
+            return false;
+        }
+        return super.hasSameIdentity(event)
+                && from.equals(event.from)
+                && to.equals(event.to);
+    }
+
+    /**
      * Returns this event in the line format used for persistence.
      *
      * @return the saved representation of this event
