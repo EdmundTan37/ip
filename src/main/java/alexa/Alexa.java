@@ -147,8 +147,6 @@ public class Alexa {
     /** Removes one task from the list, saves it, and returns the removed task. */
     private Task deleteTask(String numberText) throws AlexaException {
         int taskNumber = parser.parseTaskNumber(numberText, DELETE_COMMAND, tasks.size());
-        Task deletedTask = tasks.remove(taskNumber - 1);
-        int taskNumber = parser.parseTaskNumber(numberText, "delete", tasks.size());
         int taskIndex = taskNumber - 1;
         assert taskIndex >= 0 && taskIndex < tasks.size()
                 : "A validated task number must identify an existing task.";
