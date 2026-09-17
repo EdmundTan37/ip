@@ -53,11 +53,6 @@ public class Ui {
         showResponse("OOPS!!! I could not load your saved tasks. Starting with an empty list.");
     }
 
-    /** Shows Alexa's farewell. */
-    public void showFarewell() {
-        showResponse(getFarewellMessage());
-    }
-
     /**
      * Returns Alexa's greeting message.
      *

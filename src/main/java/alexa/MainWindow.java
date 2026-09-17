@@ -51,6 +51,8 @@ public class MainWindow extends AnchorPane {
             return;
         }
 
+        assert alexa != null : "Alexa must be injected before user input is handled.";
+
         String alexaText = alexa.getResponse(userText);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(userText, userImage),
