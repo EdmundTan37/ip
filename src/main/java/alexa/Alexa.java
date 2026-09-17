@@ -7,6 +7,17 @@ import java.nio.file.Path;
  * Coordinates task commands, storage, and the console or graphical user interface.
  */
 public class Alexa {
+    /** Command words recognized by Alexa. */
+    private static final String BYE_COMMAND = "bye";
+    private static final String LIST_COMMAND = "list";
+    private static final String FIND_COMMAND = "find";
+    private static final String TODO_COMMAND = "todo";
+    private static final String DEADLINE_COMMAND = "deadline";
+    private static final String EVENT_COMMAND = "event";
+    private static final String MARK_COMMAND = "mark";
+    private static final String UNMARK_COMMAND = "unmark";
+    private static final String DELETE_COMMAND = "delete";
+
     /** The task collection and its operations. */
     private final TaskList tasks;
     /** The component responsible for console interaction and response formatting. */
@@ -41,7 +52,7 @@ public class Alexa {
 
         while (ui.hasNextCommand()) {
             String command = ui.readCommand();
-            if (command.equals("bye")) {
+            if (command.equals(BYE_COMMAND)) {
                 ui.showFarewell();
                 return;
             }
@@ -65,7 +76,7 @@ public class Alexa {
      * @return The response that should be shown to the user.
      */
     public String getResponse(String command) {
-        if (command.equals("bye")) {
+        if (command.equals(BYE_COMMAND)) {
             return ui.getFarewellMessage();
         }
         try {
@@ -82,28 +93,28 @@ public class Alexa {
 
     /** Handles a single command and returns its user-facing response. */
     private String handleCommand(String command) throws AlexaException {
-        if (command.equals("list")) {
+        if (command.equals(LIST_COMMAND)) {
             return ui.getTaskListMessage(tasks);
-        } else if (parser.isCommand(command, "find")) {
-            String keyword = parser.parseFindKeyword(parser.getArgument(command, "find"));
+        } else if (parser.isCommand(command, FIND_COMMAND)) {
+            String keyword = parser.parseFindKeyword(parser.getArgument(command, FIND_COMMAND));
             return ui.getMatchingTasksMessage(tasks.findTasks(keyword));
-        } else if (parser.isCommand(command, "todo")) {
-            Task task = addTask(parser.parseTodo(parser.getArgument(command, "todo")));
+        } else if (parser.isCommand(command, TODO_COMMAND)) {
+            Task task = addTask(parser.parseTodo(parser.getArgument(command, TODO_COMMAND)));
             return ui.getTaskAddedMessage(task, tasks.size());
-        } else if (parser.isCommand(command, "deadline")) {
-            Task task = addTask(parser.parseDeadline(parser.getArgument(command, "deadline")));
+        } else if (parser.isCommand(command, DEADLINE_COMMAND)) {
+            Task task = addTask(parser.parseDeadline(parser.getArgument(command, DEADLINE_COMMAND)));
             return ui.getTaskAddedMessage(task, tasks.size());
-        } else if (parser.isCommand(command, "event")) {
-            Task task = addTask(parser.parseEvent(parser.getArgument(command, "event")));
+        } else if (parser.isCommand(command, EVENT_COMMAND)) {
+            Task task = addTask(parser.parseEvent(parser.getArgument(command, EVENT_COMMAND)));
             return ui.getTaskAddedMessage(task, tasks.size());
-        } else if (parser.isCommand(command, "mark")) {
-            Task task = updateTaskStatus(parser.getArgument(command, "mark"), true);
+        } else if (parser.isCommand(command, MARK_COMMAND)) {
+            Task task = updateTaskStatus(parser.getArgument(command, MARK_COMMAND), true);
             return ui.getTaskStatusMessage(task, true);
-        } else if (parser.isCommand(command, "unmark")) {
-            Task task = updateTaskStatus(parser.getArgument(command, "unmark"), false);
+        } else if (parser.isCommand(command, UNMARK_COMMAND)) {
+            Task task = updateTaskStatus(parser.getArgument(command, UNMARK_COMMAND), false);
             return ui.getTaskStatusMessage(task, false);
-        } else if (parser.isCommand(command, "delete")) {
-            Task deletedTask = deleteTask(parser.getArgument(command, "delete"));
+        } else if (parser.isCommand(command, DELETE_COMMAND)) {
+            Task deletedTask = deleteTask(parser.getArgument(command, DELETE_COMMAND));
             return ui.getTaskDeletedMessage(deletedTask, tasks.size());
         } else {
             throw new AlexaException("I'm sorry, but I don't know what that means :-(");
@@ -119,7 +130,7 @@ public class Alexa {
 
     /** Updates the completion status of one task and returns it. */
     private Task updateTaskStatus(String numberText, boolean isDone) throws AlexaException {
-        String command = isDone ? "mark" : "unmark";
+        String command = isDone ? MARK_COMMAND : UNMARK_COMMAND;
         int taskNumber = parser.parseTaskNumber(numberText, command, tasks.size());
         Task task = tasks.get(taskNumber - 1);
         if (isDone) {
@@ -133,7 +144,7 @@ public class Alexa {
 
     /** Removes one task from the list, saves it, and returns the removed task. */
     private Task deleteTask(String numberText) throws AlexaException {
-        int taskNumber = parser.parseTaskNumber(numberText, "delete", tasks.size());
+        int taskNumber = parser.parseTaskNumber(numberText, DELETE_COMMAND, tasks.size());
         Task deletedTask = tasks.remove(taskNumber - 1);
         saveTasks();
         return deletedTask;
