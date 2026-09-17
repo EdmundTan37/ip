@@ -2,6 +2,8 @@ package alexa;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Handles Alexa's console input and formats messages for console and graphical user interfaces.
@@ -147,8 +149,11 @@ public class Ui {
 
     /** Appends a numbered task list to a message. */
     private void appendTasks(StringBuilder message, List<Task> tasks) {
-        for (int index = 0; index < tasks.size(); index++) {
-            message.append('\n').append(index + 1).append('.').append(tasks.get(index));
+        String numberedTasks = IntStream.range(0, tasks.size())
+                .mapToObj(index -> (index + 1) + "." + tasks.get(index))
+                .collect(Collectors.joining("\n"));
+        if (!numberedTasks.isEmpty()) {
+            message.append('\n').append(numberedTasks);
         }
     }
 }
