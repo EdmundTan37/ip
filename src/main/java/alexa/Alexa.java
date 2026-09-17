@@ -2,6 +2,7 @@ package alexa;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.OptionalInt;
 
 /**
  * Coordinates task commands, storage, and the console or graphical user interface.
@@ -122,6 +123,11 @@ public class Alexa {
 
     /** Stores a task, saves the updated list, and returns the task. */
     private Task addTask(Task task) throws AlexaException {
+        OptionalInt duplicateTaskNumber = tasks.findDuplicateTaskNumber(task);
+        if (duplicateTaskNumber.isPresent()) {
+            throw new AlexaException("This task already exists in task "
+                    + duplicateTaskNumber.getAsInt() + ".");
+        }
         tasks.add(task);
         saveTasks();
         return task;

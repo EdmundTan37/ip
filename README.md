@@ -22,7 +22,15 @@ Features:
 - [x] Marking, unmarking, and deleting tasks
 - [x] Keyword search using `find KEYWORD`
 - [x] Automatic task saving
+- [x] Duplicate task prevention
 - [ ] Reminders — coming soon
+
+## Duplicate task prevention
+
+Alexa rejects a new task when an identical task already exists. Identical tasks have the same type,
+description, and applicable dates; completion status does not matter. For example, entering
+`todo read book` twice reports `OOPS!!! This task already exists in task 1.` A `todo` and a
+`deadline` with the same description remain separate tasks.
 
 ---
 

@@ -28,6 +28,18 @@ public abstract class Task {
         this.description = description;
     }
 
+    /**
+     * Returns whether another task has the same identity as this task.
+     *
+     * @param other The task to compare with this task.
+     * @return {@code true} if both tasks have the same type and description.
+     */
+    public boolean hasSameIdentity(Task other) {
+        return other != null
+                && getClass().equals(other.getClass())
+                && description.equals(other.description);
+    }
+
     /** Marks this task as completed. */
     public void markAsDone() {
         isDone = true;

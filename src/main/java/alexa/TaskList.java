@@ -3,6 +3,8 @@ package alexa;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.OptionalInt;
+import java.util.stream.IntStream;
 
 /**
  * Owns Alexa's ordered collection of tasks and provides operations on that collection.
@@ -23,6 +25,19 @@ public class TaskList {
      */
     public List<Task> findTasks(String keyword) {
         return tasks.stream().filter(task -> task.hasDescriptionContaining(keyword)).toList();
+    }
+
+    /**
+     * Returns the one-based number of the first task identical to the given task.
+     *
+     * @param task The task to compare with the tasks in this list.
+     * @return The duplicate task number, or an empty result when no duplicate exists.
+     */
+    public OptionalInt findDuplicateTaskNumber(Task task) {
+        return IntStream.range(0, tasks.size())
+                .filter(index -> tasks.get(index).hasSameIdentity(task))
+                .map(index -> index + 1)
+                .findFirst();
     }
 
     /**
