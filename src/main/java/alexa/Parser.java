@@ -7,6 +7,11 @@ import java.time.format.DateTimeParseException;
  * Interprets command text and creates the tasks or values requested by a user.
  */
 public class Parser {
+    /** Delimiters that separate task descriptions from their date details. */
+    private static final String DEADLINE_DATE_MARKER = " /by ";
+    private static final String EVENT_START_DATE_MARKER = " /from ";
+    private static final String EVENT_END_DATE_MARKER = " /to ";
+
     /**
      * Returns whether the input contains a command followed by whitespace or nothing.
      *
@@ -44,7 +49,7 @@ public class Parser {
 
     /** Parses the arguments for a deadline command. */
     public Deadline parseDeadline(String details) throws AlexaException {
-        String[] parts = details.split(" /by ", 2);
+        String[] parts = details.split(DEADLINE_DATE_MARKER, 2);
         if (parts.length != 2) {
             throw new AlexaException("A deadline needs a description and date: deadline DESCRIPTION /by yyyy-MM-dd.");
         }
@@ -53,12 +58,12 @@ public class Parser {
 
     /** Parses the arguments for an event command. */
     public Event parseEvent(String details) throws AlexaException {
-        String[] fromParts = details.split(" /from ", 2);
+        String[] fromParts = details.split(EVENT_START_DATE_MARKER, 2);
         if (fromParts.length != 2) {
             throw new AlexaException("An event needs a description, start date, and end date: "
                     + "event DESCRIPTION /from yyyy-MM-dd /to yyyy-MM-dd.");
         }
-        String[] toParts = fromParts[1].split(" /to ", 2);
+        String[] toParts = fromParts[1].split(EVENT_END_DATE_MARKER, 2);
         if (toParts.length != 2) {
             throw new AlexaException("An event needs an end date after /to.");
         }
