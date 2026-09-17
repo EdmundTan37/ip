@@ -121,7 +121,10 @@ public class Alexa {
     private Task updateTaskStatus(String numberText, boolean isDone) throws AlexaException {
         String command = isDone ? "mark" : "unmark";
         int taskNumber = parser.parseTaskNumber(numberText, command, tasks.size());
-        Task task = tasks.get(taskNumber - 1);
+        int taskIndex = taskNumber - 1;
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "A validated task number must identify an existing task.";
+        Task task = tasks.get(taskIndex);
         if (isDone) {
             task.markAsDone();
         } else {
@@ -134,7 +137,10 @@ public class Alexa {
     /** Removes one task from the list, saves it, and returns the removed task. */
     private Task deleteTask(String numberText) throws AlexaException {
         int taskNumber = parser.parseTaskNumber(numberText, "delete", tasks.size());
-        Task deletedTask = tasks.remove(taskNumber - 1);
+        int taskIndex = taskNumber - 1;
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "A validated task number must identify an existing task.";
+        Task deletedTask = tasks.remove(taskIndex);
         saveTasks();
         return deletedTask;
     }

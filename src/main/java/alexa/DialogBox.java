@@ -32,6 +32,9 @@ public class DialogBox extends HBox {
             throw new IllegalStateException("Unable to load a chat dialog.", exception);
         }
 
+        assert dialog != null : "DialogBox.fxml must inject the dialog label.";
+        assert displayPicture != null : "DialogBox.fxml must inject the avatar ImageView.";
+
         dialog.setText(text);
         displayPicture.setImage(image);
     }
