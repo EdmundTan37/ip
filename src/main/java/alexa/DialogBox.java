@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 /** Represents one chat message with text and an avatar image. */
 public class DialogBox extends HBox {
@@ -35,6 +36,9 @@ public class DialogBox extends HBox {
         assert dialog != null : "DialogBox.fxml must inject the dialog label.";
         assert displayPicture != null : "DialogBox.fxml must inject the avatar ImageView.";
 
+        setMaxWidth(Double.MAX_VALUE);
+        dialog.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(dialog, Priority.ALWAYS);
         dialog.setText(text);
         displayPicture.setImage(image);
     }
@@ -56,6 +60,19 @@ public class DialogBox extends HBox {
      */
     public static DialogBox getUserDialog(String text, Image image) {
         return new DialogBox(text, image);
+    }
+
+    /**
+     * Returns a left-aligned dialog styled to highlight an Alexa error message.
+     *
+     * @param text The error message text.
+     * @param image Alexa's avatar image.
+     * @return An error dialog box.
+     */
+    public static DialogBox getErrorDialog(String text, Image image) {
+        DialogBox dialogBox = getAlexaDialog(text, image);
+        dialogBox.getStyleClass().add("error-dialog");
+        return dialogBox;
     }
 
     /**

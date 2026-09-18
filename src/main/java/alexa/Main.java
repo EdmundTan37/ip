@@ -2,6 +2,7 @@ package alexa;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Objects;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -27,9 +28,14 @@ public class Main extends Application {
             MainWindow mainWindow = loader.getController();
             mainWindow.setAlexa(alexa);
 
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(Objects.requireNonNull(
+                    Main.class.getResource("/styles/alexa.css")).toExternalForm());
             stage.setTitle("Alexa");
-            stage.setScene(new Scene(root));
-            stage.setResizable(false);
+            stage.setMinWidth(400);
+            stage.setMinHeight(500);
+            stage.setScene(scene);
+            stage.setResizable(true);
             stage.show();
         } catch (IOException exception) {
             throw new IllegalStateException("Unable to load the Alexa user interface.", exception);
