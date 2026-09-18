@@ -97,4 +97,27 @@ class StorageTest {
 
         assertEquals("Invalid task data: E | 0 | project meeting | 2019-10-16", exception.getMessage());
     }
+
+    @Test
+    void load_existingDuplicateTasks_preservesEveryStoredTask() throws IOException {
+        Files.createDirectories(dataFile.getParent());
+        Files.write(dataFile, List.of("T | 0 | read book", "T | 0 | read book"));
+
+        List<Task> loadedTasks = storage.load();
+
+        assertEquals(2, loadedTasks.size());
+        assertEquals("[T][ ] read book", loadedTasks.get(0).toString());
+        assertEquals("[T][ ] read book", loadedTasks.get(1).toString());
+    }
+
+    @Test
+    void load_eventWithEndDateNotLaterThanStartDate_throwsIOException() throws IOException {
+        Files.createDirectories(dataFile.getParent());
+        Files.writeString(dataFile, "E | 0 | meeting | 2026-10-16 | 2026-10-15");
+
+        IOException exception = assertThrows(IOException.class, storage::load);
+
+        assertEquals("Invalid event date range: E | 0 | meeting | 2026-10-16 | 2026-10-15",
+                exception.getMessage());
+    }
 }

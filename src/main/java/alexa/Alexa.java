@@ -54,7 +54,7 @@ public class Alexa {
         while (ui.hasNextCommand()) {
             String command = ui.readCommand();
             ui.showResponse(getResponse(command));
-            if (command.equals(BYE_COMMAND)) {
+            if (command.trim().equals(BYE_COMMAND)) {
                 return;
             }
         }
@@ -76,11 +76,12 @@ public class Alexa {
      * @return The response that should be shown to the user.
      */
     public String getResponse(String command) {
-        if (command.equals(BYE_COMMAND)) {
+        String trimmedCommand = command.trim();
+        if (trimmedCommand.equals(BYE_COMMAND)) {
             return ui.getFarewellMessage();
         }
         try {
-            return handleCommand(command);
+            return handleCommand(trimmedCommand);
         } catch (AlexaException exception) {
             return ui.getErrorMessage(exception.getMessage());
         }
