@@ -317,3 +317,44 @@ ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
 ```
+
+## Test case: Reject malformed task details
+
+**Aim:** Verify that Alexa accepts harmless command whitespace while rejecting repeated markers, invalid event ranges, and unsafe task descriptions.
+
+**Input:**
+
+```text
+  todo    read book
+deadline return book /by 2026-10-15 /by 2026-10-16
+event meeting /from 2026-10-16 /to 2026-10-15
+todo read | book
+bye
+```
+
+**Expected output:**
+
+```text
+____________________________________________________________
+                 A L E X A
+Hello! I'm Alexa.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+Got it. I've added this task:
+  [T][ ] read book
+Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+OOPS!!! A deadline can contain /by only once.
+____________________________________________________________
+____________________________________________________________
+OOPS!!! The event end date must be later than the start date.
+____________________________________________________________
+____________________________________________________________
+OOPS!!! A task description cannot contain the | character.
+____________________________________________________________
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+```

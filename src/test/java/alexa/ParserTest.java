@@ -125,4 +125,50 @@ class ParserTest {
 
         assertEquals("There is no task 4. Use list to see the task numbers.", exception.getMessage());
     }
+
+    @Test
+    void isCommand_tabSeparatedArgument_returnsTrue() {
+        assertTrue(parser.isCommand("todo\tread book", "todo"));
+    }
+
+    @Test
+    void parseTodo_descriptionWithStorageDelimiter_throwsException() {
+        AlexaException exception = assertThrows(AlexaException.class, () -> parser.parseTodo("read | book"));
+
+        assertEquals("A task description cannot contain the | character.", exception.getMessage());
+    }
+
+    @Test
+    void parseDeadline_multipleSpacesAroundMarker_createsDeadline() throws AlexaException {
+        Deadline deadline = parser.parseDeadline("return book   /by   2026-10-15");
+
+        assertEquals("[D][ ] return book (by: Oct 15 2026)", deadline.toString());
+    }
+
+    @Test
+    void parseDeadline_repeatedDateMarker_throwsException() {
+        AlexaException exception = assertThrows(AlexaException.class,
+                () -> parser.parseDeadline("return book /by 2026-10-15 /by 2026-10-16"));
+
+        assertEquals("A deadline can contain /by only once.", exception.getMessage());
+    }
+
+    @Test
+    void parseEvent_endDateNotLaterThanStartDate_throwsException() {
+        AlexaException equalDateException = assertThrows(AlexaException.class,
+                () -> parser.parseEvent("meeting /from 2026-10-15 /to 2026-10-15"));
+        AlexaException earlierDateException = assertThrows(AlexaException.class,
+                () -> parser.parseEvent("meeting /from 2026-10-16 /to 2026-10-15"));
+
+        assertEquals("The event end date must be later than the start date.", equalDateException.getMessage());
+        assertEquals("The event end date must be later than the start date.", earlierDateException.getMessage());
+    }
+
+    @Test
+    void parseEvent_repeatedEndDateMarker_throwsException() {
+        AlexaException exception = assertThrows(AlexaException.class,
+                () -> parser.parseEvent("meeting /from 2026-10-15 /to 2026-10-16 /to 2026-10-17"));
+
+        assertEquals("An event can contain /to only once.", exception.getMessage());
+    }
 }

@@ -86,7 +86,12 @@ public class Storage {
     /** Recreates an event task from saved fields. */
     private Event createEvent(String[] fields, String taskLine) throws IOException {
         requireFieldCount(fields, 5, taskLine);
-        return new Event(fields[2], parseDate(fields[3], taskLine), parseDate(fields[4], taskLine));
+        LocalDate startDate = parseDate(fields[3], taskLine);
+        LocalDate endDate = parseDate(fields[4], taskLine);
+        if (!startDate.isBefore(endDate)) {
+            throw new IOException("Invalid event date range: " + taskLine);
+        }
+        return new Event(fields[2], startDate, endDate);
     }
 
     /** Restores a task's saved completion status. */
