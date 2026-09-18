@@ -11,6 +11,8 @@ import javafx.scene.layout.VBox;
 
 /** Controls Alexa's main JavaFX chat window. */
 public class MainWindow extends AnchorPane {
+    /** Prefix used by Alexa for user-facing error responses. */
+    private static final String ERROR_PREFIX = "OOPS!!!";
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -54,9 +56,12 @@ public class MainWindow extends AnchorPane {
         assert alexa != null : "Alexa must be injected before user input is handled.";
 
         String alexaText = alexa.getResponse(userText);
+        DialogBox alexaDialog = alexaText.startsWith(ERROR_PREFIX)
+                ? DialogBox.getErrorDialog(alexaText, alexaImage)
+                : DialogBox.getAlexaDialog(alexaText, alexaImage);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(userText, userImage),
-                DialogBox.getAlexaDialog(alexaText, alexaImage));
+                alexaDialog);
         userInput.clear();
     }
 }
