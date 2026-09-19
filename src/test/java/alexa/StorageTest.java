@@ -120,4 +120,45 @@ class StorageTest {
         assertEquals("Invalid event date range: E | 0 | meeting | 2026-10-16 | 2026-10-15",
                 exception.getMessage());
     }
+
+    @Test
+    void load_todoWithUnexpectedField_throwsIOException() throws IOException {
+        Files.createDirectories(dataFile.getParent());
+        Files.writeString(dataFile, "T | 0 | read book | unexpected");
+
+        IOException exception = assertThrows(IOException.class, storage::load);
+
+        assertEquals("Invalid task data: T | 0 | read book | unexpected", exception.getMessage());
+    }
+
+    @Test
+    void load_deadlineWithMissingDate_throwsIOException() throws IOException {
+        Files.createDirectories(dataFile.getParent());
+        Files.writeString(dataFile, "D | 0 | return book");
+
+        IOException exception = assertThrows(IOException.class, storage::load);
+
+        assertEquals("Invalid task data: D | 0 | return book", exception.getMessage());
+    }
+
+    @Test
+    void load_eventWithEqualDates_throwsIOException() throws IOException {
+        Files.createDirectories(dataFile.getParent());
+        Files.writeString(dataFile, "E | 0 | meeting | 2026-10-15 | 2026-10-15");
+
+        IOException exception = assertThrows(IOException.class, storage::load);
+
+        assertEquals("Invalid event date range: E | 0 | meeting | 2026-10-15 | 2026-10-15",
+                exception.getMessage());
+    }
+
+    @Test
+    void load_malformedLine_throwsIOException() throws IOException {
+        Files.createDirectories(dataFile.getParent());
+        Files.writeString(dataFile, "T | 0");
+
+        IOException exception = assertThrows(IOException.class, storage::load);
+
+        assertEquals("Invalid task data: T | 0", exception.getMessage());
+    }
 }

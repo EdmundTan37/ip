@@ -171,4 +171,40 @@ class ParserTest {
 
         assertEquals("An event can contain /to only once.", exception.getMessage());
     }
+
+    @Test
+    void parseDeadline_blankDescriptionAndDate_throwsSpecificExceptions() {
+        AlexaException blankDescription = assertThrows(AlexaException.class,
+                () -> parser.parseDeadline(" /by 2026-10-15"));
+        AlexaException blankDate = assertThrows(AlexaException.class,
+                () -> parser.parseDeadline("return book /by "));
+
+        assertEquals("The description of a deadline cannot be empty.", blankDescription.getMessage());
+        assertEquals("The deadline date cannot be empty.", blankDate.getMessage());
+    }
+
+    @Test
+    void parseEvent_repeatedStartMarkerAndInvalidDate_throwsSpecificExceptions() {
+        AlexaException repeatedStart = assertThrows(AlexaException.class,
+                () -> parser.parseEvent("meeting /from 2026-10-15 /from 2026-10-16"
+                        + " /to 2026-10-17"));
+        AlexaException invalidDate = assertThrows(AlexaException.class,
+                () -> parser.parseEvent("meeting /from tomorrow /to 2026-10-17"));
+
+        assertEquals("An event can contain /from only once.", repeatedStart.getMessage());
+        assertEquals("The event start date must use yyyy-MM-dd, for example 2019-10-15.",
+                invalidDate.getMessage());
+    }
+
+    @Test
+    void parseTaskNumber_zeroAndNegativeNumber_throwsOutOfRangeException() {
+        AlexaException zeroException = assertThrows(AlexaException.class,
+                () -> parser.parseTaskNumber("0", "delete", 2));
+        AlexaException negativeException = assertThrows(AlexaException.class,
+                () -> parser.parseTaskNumber("-1", "delete", 2));
+
+        assertEquals("There is no task 0. Use list to see the task numbers.", zeroException.getMessage());
+        assertEquals("There is no task -1. Use list to see the task numbers.",
+                negativeException.getMessage());
+    }
 }
