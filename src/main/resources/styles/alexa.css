@@ -1,6 +1,13 @@
+/*.root {*/
+/*    -fx-background-color: #f7f9fc;*/
+/*    -fx-font-family: "Segoe UI", Arial, sans-serif;*/
+/*}*/
+
 .root {
-    -fx-background-color: #f7f9fc;
-    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-background-image: url("../images/Background.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-size: cover;
 }
 
 .scroll-pane,
